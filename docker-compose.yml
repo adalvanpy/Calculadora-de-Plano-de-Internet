@@ -1,6 +1,6 @@
 services:
   api:
-    image: php:8.2-apache
+    build: ./api
     container_name: api-php
     volumes:
       - ./api:/var/www/html
@@ -12,17 +12,14 @@ services:
       - db
 
   frontend:
-    image: node:18
+    image: php:8.2-apache
     container_name: frontend
-    working_dir: /app
     volumes:
-      - ./frontend:/app
-    command: sh -c "npm install && npm run dev"
+      - ./frontend:/var/www/html
     ports:
-      - "3001:3000"
+      - "3001:80"
     networks:
       - app_net
-
   db:
     image: mysql:8.0
     container_name: mysql-db
