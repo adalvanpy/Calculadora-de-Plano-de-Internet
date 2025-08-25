@@ -13,40 +13,43 @@ $game = $_GET["game"] ?? null;
     <script src="https://cdn.tailwindcss.com"></script>
     <title>Calculadora de Planos de Internet</title>
 </head>
-<body class="flex flex-col items-center justify-start w-full h-screen bg-[#E6F0FA]">
-<header class="flex text-white items-center flex-col h-30 w-full bg-[#1E64B7] p-4">
+<body class="flex flex-col items-center justify-start w-full h-screen">
+<header class="flex text-blue-500 items-center justify-center h-30 w-full bg-[#cbdae2] p-4">
     <p class="text-4xl">Calculadora de Planos</p>
 </header>
-<main class="flex items-center justify-center w-full h-full border">
-    <form class="bg-[#1E64B7] text-white rounded-md flex flex-col items-center justify-center gap-4 border p-12" action="http://localhost:3000/calculo.php" method="post">
+<main class="flex flex-col items-center justify-center w-full h-full">
+    <svg viewBox="0 0 15 15" fill="#22c55e" class="w-40 h-20 animate-bounce mt-4">
+        <path d="M10 10C9 10 9 11 9 11 9 12 10 12 10 12 11 12 11 11 11 11 11 11 11 10 10 10M7 10C9 7 11 7 13 10 13 10 13 11 12 11 11 9 9 9 8 11 8 11 7 11 7 10M5 8C9 4 11 4 15 8 15 9 15 9 14 9 11 6 9 6 6 9 5 9 5 9 5 8"/>
+    </svg>
+    <form class="bg-[#cbdae2] text-white rounded-md flex flex-col items-center justify-center gap-4 border p-12" action="http://localhost:3000/calculo.php" method="post">
         <div class="flex items-center justify-center gap-4">
             <p class="w-24 px-2 py-2" for="celular">Celular</p>
-            <button class="rounded-md bg-blue-500 text-white w-10 h-10" type="button" onclick="document.getElementById('celular').stepUp()">+</button>
-            <input class="text-[#1E64B7] rounded-md bg-[#E6F0FA] text-center w-32 px-2 py-2" value="0" type="number" name="celular" id="celular">
+            <button class="rounded-md bg-green-500 text-white w-10 h-10" type="button" onclick="document.getElementById('celular').stepUp()">+</button>
+            <input class="text-[#1E64B7] rounded-md  text-center w-32 px-2 py-2" value="0" type="number" name="celular" id="celular">
             <button class="rounded-md bg-red-500 text-white w-10 h-10" type="button" onclick="document.getElementById('celular').stepDown()">-</button>
         </div>
         <div class="flex items-center justify-center gap-4">
             <p class="w-24 px-2 py-2" for="computador">Computador</p>
-            <button class="rounded-md bg-blue-500 text-white w-10 h-10" type="button" onclick="document.getElementById('computador').stepUp()">+</button>
-            <input  class="text-[#1E64B7] bg-[#E6F0FA]  rounded-md   text-center w-32 px-2 py-2" value="0" type="number" name="computador" id="computador">
+            <button class="rounded-md bg-green-500 text-white w-10 h-10" type="button" onclick="document.getElementById('computador').stepUp()">+</button>
+            <input  class="text-[#1E64B7] rounded-md text-center w-32 px-2 py-2" value="0" type="number" name="computador" id="computador">
             <button class="rounded-md bg-red-500 text-white w-10 h-10" type="button" onclick="document.getElementById('computador').stepDown()">-</button>
         </div>
         <div class="flex items-center justify-center gap-4">
             <p class="w-24 px-2 py-2" for="smarttv">Smart TV</p>
-            <button class="rounded-md bg-blue-500 text-white w-10 h-10" type="button" onclick="document.getElementById('smarttv').stepUp()">+</button>
-            <input class="text-[#1E64B7] bg-[#E6F0FA]  rounded-md   text-center w-32 px-2 py-2" value="0" type="number" name="smarttv" id="smarttv">
+            <button class="rounded-md bg-green-500 text-white w-10 h-10" type="button" onclick="document.getElementById('smarttv').stepUp()">+</button>
+            <input class="text-[#1E64B7] rounded-md text-center w-32 px-2 py-2" value="0" type="number" name="smarttv" id="smarttv">
             <button class="rounded-md bg-red-500 text-white w-10 h-10" type="button" onclick="document.getElementById('smarttv').stepDown()">-</button>
         </div>
         <div class="flex items-center justify-center gap-4">
             <p class="w-24 px-2 py-2" for="tvbox">TV Box</p>
-            <button class="rounded-md bg-blue-500 text-white w-10 h-10" type="button" onclick="document.getElementById('tvbox').stepUp()">+</button>
-            <input class="text-[#1E64B7] bg-[#E6F0FA] rounded-md text-center w-32 px-2 py-2" value="0" type="number" name="tvbox" id="tvbox">
+            <button class="rounded-md bg-green-500 text-white w-10 h-10" type="button" onclick="document.getElementById('tvbox').stepUp()">+</button>
+            <input class="text-[#1E64B7] rounded-md text-center w-32 px-2 py-2" value="0" type="number" name="tvbox" id="tvbox">
             <button class="rounded-md bg-red-500 text-white w-10 h-10" type="button" onclick="document.getElementById('tvbox').stepDown()">-</button>
         </div>
         <div class="flex items-center justify-center gap-4">
             <p class="w-24 px-2 py-2" for="outros">Outros</p>
-            <button class="rounded-md bg-blue-500 text-white w-10 h-10" type="button" onclick="document.getElementById('outros').stepUp()">+</button>
-            <input class="text-[#1E64B7] bg-[#E6F0FA] rounded-md  text-center w-32 px-2 py-2" value="0" type="number" name="outros" id="outros">
+            <button class="rounded-md bg-green-500 text-white w-10 h-10" type="button" onclick="document.getElementById('outros').stepUp()">+</button>
+            <input class="text-[#1E64B7] rounded-md  text-center w-32 px-2 py-2" value="0" type="number" name="outros" id="outros">
             <button class="rounded-md bg-red-500 text-white w-10 h-10" type="button" onclick="document.getElementById('outros').stepDown()">-</button>
         </div>
         <div class="flex gap-4">
@@ -56,14 +59,14 @@ $game = $_GET["game"] ?? null;
               <span id="filho" class="absolute -top-1 -left-1 w-8 h-8 bg-gray-500 rounded-full"></span>
             </div>
         </div>
-        <input class="w-60 px-4 py-2 bg-green-400 rounded-md text-white" type="submit" value="CALCULAR PLANO">
+        <input class="w-60 px-4 py-2 bg-green-500 rounded-md text-white" type="submit" value="CALCULAR PLANO">
     </form>
 </main>
 
 <?php if(isset($pesototal) && $pesototal > 0): ?>
     <div id="planopai" class="fixed inset-0 w-full h-full bg-gray-500/10 backdrop-blur-[1px] flex">
         <div id="corPlano" class=" w-[20%] h-auto m-auto p-4 rounded-md shadow-md">
-            <span onclick="document.getElementById('planopai').classList.add('hidden')" class=" cursor-pointer p-2 text-[#1E64B7] flex items-center">
+            <a href="http://localhost:3001/calculadora_plano.php" onclick="document.getElementById('planopai').classList.add('hidden')" class=" cursor-pointer p-2 text-[#1E64B7] flex items-center">
                   <svg class="w-6 h-6"  stroke="currentColor" stroke-width="1.5"
                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 10 10">
                   <path d="M2 1 5 4 8 1 C9 1 9 1 9 2 L6 5
@@ -71,7 +74,7 @@ $game = $_GET["game"] ?? null;
                    C1 9 1 9 1 8 L4 5 1 2 C1 1 1 1 2 1"
                    />
                 </svg>
-            </span>
+            </a>
             <form class="flex flex-col items-center justify-center w-full p-4" action="http://localhost:3001/suas_informacoes.php" method="post">
                 <?php foreach ($disp_list as $i => $dispositivo):?>
                 <input type="hidden" name="qtd[]" value="<?= $qtd[$i] ?>">
@@ -127,13 +130,13 @@ $game = $_GET["game"] ?? null;
 
         if (checkbox.checked) {
            filho.classList.remove('-left-1');
-           filho.classList.add('-right-1', 'bg-blue-400');
-           pai.classList.add('bg-blue-200');
+           filho.classList.add('-right-1', 'bg-green-500');
+           pai.classList.add('bg-green-200');
         }
         else {
-            filho.classList.remove('-right-1', 'bg-blue-400');
+            filho.classList.remove('-right-1', 'bg-green-500');
             filho.classList.add('-left-1', 'bg-gray-500');
-            pai.classList.remove('bg-blue-200');
+            pai.classList.remove('bg-green-200');
     }
     });
 </script>
