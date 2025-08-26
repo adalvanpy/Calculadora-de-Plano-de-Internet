@@ -10,8 +10,19 @@ $exibirDispositivos = $dados['exibirDispositivos'];
 $totalV = COUNT($vendas);
 $totalVendasHoje = COUNT($vendasHoje);
 
-$busca = $_POST['busca'] ?? "";
+$busca = $_POST['busca'] ?? $_GET['busca'] ?? $_GET['tipo'] ?? "";
 $mostrarD = $_GET['id'] ?? "";
+
+$cl = [];
+if (!empty($busca) && $busca !== 'todas') {
+    foreach ($vendas as $venda) {
+        if (str_starts_with($venda['cliente'] ?? '', $busca) || ($venda['data'] ?? '') === $busca) {
+            $cl[] = $venda;
+        }
+    }
+    $vendas = $cl;
+}
+
 
 $user = $_SESSION['usuario'] ?? $_COOKIE['usuario'] ?? "";
 $id   = $_SESSION['id'] ?? $_COOKIE['id'] ?? "";
@@ -75,7 +86,7 @@ if(!$user || !$id){
         <div class="flex items-center justify-center rounded-t-md w-[90%] h-full p-4 bg-[#d8e3e9]">
             <div class="w-full">
                 <p class="font-bold text-lg">Vendas</p>
-                <span id="tipo" class="text-center text-green-500">Todas</span>
+                <a href="http://localhost:3001/vendas.php?tipo=todas"  id="tipo" class="text-center text-green-500">Ver todas</a>
             </div>
             <div>
                 <form action="http://localhost:3001/vendas.php" method="post" class="flex bg-white rounded-md">
@@ -101,11 +112,6 @@ if(!$user || !$id){
             </thead>
             <tbody class="bg-white shadow-md rounded-md">
             <?php foreach ($vendas as $venda): ?>
-                <?php
-                if ($busca === ''
-                    || str_contains(strtolower($venda['cliente']), strtolower($busca))
-                    || str_contains(strtolower($venda['data']), strtolower($busca))):
-                    ?>
                     <tr>
                         <td class="px-4 py-3 w-80 border-t text-center"><?= $venda['cliente'] ?></td>
                         <td class="px-4 py-3 w-60 border-t text-center"><?= $venda['email'] ?></td>
@@ -138,7 +144,7 @@ if(!$user || !$id){
                         </td>
                         <?php endif; ?>
                         <td class="px-4 py-3 w-[10%] border-t text-center">
-                            <form action="http://localhost:3000/filtrosVendas.php" method="post">
+                            <form action="http://localhost:3000/filtrosVendas.php?busca=<?=$busca?>" method="post">
                                 <input type="hidden" name="id" value="<?= $venda['id'] ?>">
                                 <button type="submit" class="p-1">
                                     <svg class="w-10 h-10" viewBox="0 0 12 12">
@@ -150,14 +156,6 @@ if(!$user || !$id){
                             </form>
                         </td>
                     </tr>
-                <?php if($busca !== "" && str_contains(strtolower($venda['cliente']), strtolower($busca))): ?>
-                    <script> document.getElementById('tipo').innerHTML = 'Cliente'</script>
-                <?php elseif ( $busca !== "" && str_contains(strtolower($venda['data']), strtolower($busca))): ?>
-                    <script> document.getElementById('tipo').innerHTML = 'Data'</script>
-                <?php elseif ($busca === ""): ?>
-                    <script> document.getElementById('tipo').innerHTML = 'Todas'</script>
-                <?php endif; ?>
-                <?php endif; ?>
             <?php endforeach; ?>
             </tbody>
         </table>
@@ -193,7 +191,7 @@ if(!$user || !$id){
                 </div>
                 <?php endif;?>
             <?php endforeach; ?>
-            <span onclick="document.getElementById('contDis').classList.add('hidden')" class=" bg-[#AFCBEB] px-4 py-2 border text-white font-bold"><a href="http://localhost:3001/vendas.php">X</a></span>
+            <span onclick="document.getElementById('contDis').classList.add('hidden')" class=" cursor-pointer bg-[#AFCBEB] px-4 py-2 border text-white font-bold">X</span>
         </div>
         <?php endif; ?>
     </div>
