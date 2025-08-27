@@ -3,26 +3,24 @@ session_start();
 $url = 'http://api/crud/Buscas.php';
 $json = file_get_contents($url);
 $dados = json_decode($json, true);
-$vendas = $dados['vendas'];
-$dispositivos = $dados['dispositivos'];
-$vendasHoje = $dados['vendasHoje'];
-$exibirDispositivos = $dados['exibirDispositivos'];
-$totalV = COUNT($vendas);
-$totalVendasHoje = COUNT($vendasHoje);
+
+$vendas = $dados['vendas'] ?? [];
+$dispositivos = $dados['dispositivos'] ?? 0;
+$vendasHoje = $dados['vendasHoje'] ?? [];
+$exibirDispositivos = $dados['exibirDispositivos'] ?? [];
+
+$totalV = count($vendas);
+$totalVendasHoje = count($vendasHoje);
 
 $busca = $_POST['busca'] ?? $_GET['busca'] ?? $_GET['tipo'] ?? "";
 $mostrarD = $_GET['id'] ?? "";
 
-$cl = [];
 if (!empty($busca) && $busca !== 'todas') {
-    foreach ($vendas as $venda) {
-        if (str_starts_with($venda['cliente'] ?? '', $busca) || ($venda['data'] ?? '') === $busca) {
-            $cl[] = $venda;
-        }
-    }
-    $vendas = $cl;
+    $vendas = array_filter($vendas, function($venda) use ($busca) {
+        return str_starts_with($venda['cliente'] ?? '', $busca)
+            || ($venda['data'] ?? '') === $busca;
+    });
 }
-
 
 $user = $_SESSION['usuario'] ?? $_COOKIE['usuario'] ?? "";
 $id   = $_SESSION['id'] ?? $_COOKIE['id'] ?? "";
@@ -38,165 +36,156 @@ if(!$user || !$id){
     <meta charset="utf-8">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="flex items-start justify-center w-full h-auto border">
-<sidebar class="flex fixed left-0 flex-col items-start justify-between w-[18%] h-screen bg-[#cbdae2] p-4 text-white shadow-[5px_0_10px_rgba(0,0,0,0.3)]">
-    <div class="flex w-full flex-col items-start mt-4 gap-4">
-        <div class="flex items-center justify-between  w-full">
-            <div class="flex h-20 w-full">
-                <span class=" text-center text-2xl text-[#3e5f8a] rounded-full bg-white w-10 h-10 mb-9"> <?= substr($user, 0,1)?>
+<body class="flex items-start justify-center w-full min-h-screen bg-gray-100">
+
+<aside class="flex fixed left-0 flex-col items-start justify-between w-[18%] h-screen bg-[#1E64B7] text-white p-6 shadow-xl">
+    <div class="flex w-full flex-col items-start mt-4 gap-6">
+        <div class="flex items-center justify-between w-full">
+            <div class="flex h-20 w-full items-center">
+                <span class="flex items-center justify-center text-2xl font-bold bg-white text-[#1E64B7] w-12 h-12 rounded-full">
+                    <?= substr($user, 0,1) ?>
                 </span>
             </div>
-            <div class="flex items-start justify-end h-20 w-full">
-                <a href="http://localhost:3000/sair.php">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                         class="w-8 h-8" viewBox="0 0 16 16"
-                         fill="white">
-                        <path d="M8 6V7h3V9l3-2V6L11 4V5 6H8
-           M5 9c0 1 1 2 2 2H9V10H7S6 10 6 9V4
-           S6 3 7 3H9V2H7C6 2 5 3 5 4V9
-           S5 9 5 9 5 9 5 9"/>
-                    </svg>
-                </a>
-            </div>
+            <a href="http://localhost:3000/sair.php" class="hover:text-red-400 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 16 16" fill="white">
+                    <path d="M8 6V7h3V9l3-2V6L11 4V5 6H8
+                       M5 9c0 1 1 2 2 2H9V10H7S6 10 6 9V4
+                       S6 3 7 3H9V2H7C6 2 5 3 5 4V9"/>
+                </svg>
+            </a>
         </div>
-        <a href="calculadora_plano.php" class="mt-8 underline text-2xl">Calculadora</a>
-        <a href="http://localhost:3001/vendas.php" class="underline text-2xl">Vendas</a>
+        <a href="calculadora_plano.php" class="hover:underline text-xl">Calculadora</a>
+        <a href="http://localhost:3001/vendas.php" class="hover:underline text-xl">Vendas</a>
     </div>
-</sidebar>
-<main class="flex flex-col items-end justify-end p-4 border h-auto w-full">
-    <div class="flex items-center gap-[15%] w-[81%] justify-center  mt-20 text-black">
-        <div class="flex w-[20%] flex-col items-center justify-center p-4 bg-[#e5e6f0] shadow-md rounded-md">
-                <span>Total vendas</span>
-                <span class="text-4xl font-bold text-green-500"><?=$totalV?></span>
+</aside>
+
+
+<main class="flex flex-col items-center ml-[18%] w-[82%] p-8">
+
+    <div class="flex gap-12 w-full justify-center mt-10">
+        <div class="flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg w-1/5">
+            <span class="text-gray-600">Total vendas</span>
+            <span class="text-4xl font-bold text-green-600"><?= $totalV ?></span>
         </div>
-        <div class="flex w-[20%] flex-col items-center justify-center p-4 bg-[#e5e6f0] shadow-md rounded-md">
-                <span>Total vendas hoje</span>
-            <?php if($totalVendasHoje <= 0):?>
-                 <span class="text-4xl font-bold text-red-500"><?=$totalVendasHoje?></span>
-            <?php else:?>
-                <span class="text-4xl font-bold text-green-500"><?=$totalVendasHoje?></span>
-            <?php endif;?>
+        <div class="flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg w-1/5">
+            <span class="text-gray-600">Vendas hoje</span>
+            <span class="text-4xl font-bold <?= $totalVendasHoje > 0 ? 'text-green-600':'text-red-500' ?>">
+                <?= $totalVendasHoje ?>
+            </span>
         </div>
-        <div class="flex w-[20%] flex-col items-center justify-center p-4 bg-[#e5e6f0] shadow-md rounded-md">
-                <span>Total dispositivos</span>
-                <span class="text-4xl font-bold text-green-500"><?=$dispositivos?></span>
+        <div class="flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg w-1/5">
+            <span class="text-gray-600">Dispositivos</span>
+            <span class="text-4xl font-bold text-green-600"><?= $dispositivos ?></span>
         </div>
     </div>
-    <div class="flex flex-col items-center justify-center w-[81%] mt-10">
-        <div class="flex items-center justify-center rounded-t-md w-[90%] h-full p-4 bg-[#d8e3e9]">
-            <div class="w-full">
-                <p class="font-bold text-lg">Vendas</p>
-                <a href="http://localhost:3001/vendas.php?tipo=todas"  id="tipo" class="text-center text-green-500">Ver todas</a>
-            </div>
+
+    <div class="flex flex-col items-center justify-center w-full mt-10">
+        <div class="flex items-center justify-between rounded-t-md w-[90%] p-4 bg-[#d8e3e9]">
             <div>
-                <form action="http://localhost:3001/vendas.php" method="post" class="flex bg-white rounded-md">
-                    <input class=" rounded-md w-60 px-4 py-2 focus:outline-none focus:ring-0" type="search" name="busca" placeholder="Buscar por...">
-                    <button class=" rounded-md w-20 px-4 py-2" type="submit"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search w-8 h-8 text-[#0F3A6D]">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="m21 21-4.3-4.3"/>
-                        </svg></button>
-                </form>
+                <p class="font-bold text-lg">Vendas</p>
+                <a href="http://localhost:3001/vendas.php?tipo=todas" class="text-green-600 hover:underline">Ver todas</a>
             </div>
+            <form action="http://localhost:3001/vendas.php" method="post" class="flex bg-white rounded-md shadow">
+                <input class="rounded-md w-60 px-4 py-2 focus:outline-none" type="search" name="busca" placeholder="Buscar por...">
+                <button class="px-4" type="submit">
+                    <svg class="w-6 h-6 text-[#0F3A6D]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.3-4.3"/>
+                    </svg>
+                </button>
+            </form>
         </div>
-        <table class="w-[90%] bg-[#d8e3e9] text-black">
-            <thead class="">
+        <table class="w-[90%] bg-white text-gray-800 shadow-lg rounded-b-md overflow-hidden">
+            <thead class="bg-[#d8e3e9]">
             <tr>
-                <th class="px-4 py-2 w-60">Nome</th>
-                <th class="px-4 py-2 w-60">E-mail</th>
-                <th class="px-4 py-2 w-60">Telefone</th>
-                <th class="px-4 py-2 w-60" >Plano</th>
-                <th class="px-4 py-2 w-60">Data</th>
-                <th class="px-4 py-2 w-60">Game</th>
-                <th class="px-4 py-2 w-60">Dispositivos</th>
+                <th class="px-4 py-2">Nome</th>
+                <th class="px-4 py-2">E-mail</th>
+                <th class="px-4 py-2">Telefone</th>
+                <th class="px-4 py-2">Plano</th>
+                <th class="px-4 py-2">Data</th>
+                <th class="px-4 py-2">Game</th>
+                <th class="px-4 py-2">Dispositivos</th>
             </tr>
             </thead>
-            <tbody class="bg-white shadow-md rounded-md">
+            <tbody>
             <?php foreach ($vendas as $venda): ?>
-                    <tr>
-                        <td class="px-4 py-3 w-80 border-t text-center"><?= $venda['cliente'] ?></td>
-                        <td class="px-4 py-3 w-60 border-t text-center"><?= $venda['email'] ?></td>
-                        <td class="px-4 py-3 w-60 border-t text-center"><?= $venda['telefone'] ?></td>
-                        <?php if($venda['plano'] == 'Plano Prata'):?>
-                        <td class="px-4 py-3 w-60 border-t text-center"><span class="bg-[#e6e6e6] p-1 rounded-md"><?= $venda['plano'] ?></span></td>
-                        <?php elseif($venda['plano'] == 'Plano Bronze'):?>
-                        <td class="px-4 py-3 w-60 border-t text-center"><span class="bg-[#cd7f32] p-1 rounded-md "><?= $venda['plano'] ?></span></td>
-                        <?php elseif ($venda['plano'] == 'Plano Ouro'):?>
-                        <td class="px-4 py-3 w-60  border-t text-center"><span class="bg-[#ffd700] p-1 rounded-md"><?= $venda['plano'] ?></span></td>
-                        <?php else: ?>
-                        <td class="px-4 py-3 w-60 border-t text-center"><span class="bg-[#b9f2ff] p-1 rounded-md"><?= $venda['plano'] ?></span></td>
-                        <?php endif; ?>
-                        <td class="px-4 py-3 w-80 border-t text-center"><?= $venda['data'] ?></td>
-                        <?php if($venda['game'] == '0'):?>
-                        <td class="px-4 py-3 w-[10%] border-t">
-                            <div class="flex items-center justify-center">
-                                <svg class="w-20 h-10" viewBox="0 0 40 40">
-                                    <path d="M11 8C8 8 4 10 4 16 4 22 8 24 12 25L15 25C18 24 22 22 22 16 22 10 18 8 15 8L15 10C18 10 20 12 20 16 20 20 18 22 15 23L12 23C8 22 6 20 6 16 6 12 8 10 11 10M12 4 12 16C12 18 14 18 14 16L14 4C14 2 12 2 12 4" fill="red"/>
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-4 py-3 border-t text-center"><?= $venda['cliente'] ?></td>
+                    <td class="px-4 py-3 border-t text-center"><?= $venda['email'] ?></td>
+                    <td class="px-4 py-3 border-t text-center"><?= $venda['telefone'] ?></td>
+                    <td class="px-4 py-3 border-t text-center">
+                        <span class="px-2 py-1 rounded-md <?=
+                        $venda['plano']=='Plano Ouro' ? 'bg-yellow-300' :
+                            ($venda['plano']=='Plano Prata' ? 'bg-gray-300' :
+                                ($venda['plano']=='Plano Bronze' ? 'bg-amber-700 text-white':'bg-cyan-200')) ?>">
+                            <?= $venda['plano'] ?>
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 border-t text-center"><?= $venda['data'] ?></td>
+                    <td class="px-4 py-3 border-t text-center">
+                        <svg class="w-8 h-8 mx-auto" viewBox="0 0 40 40">
+                            <path d="M11 8C8 8 4 10 4 16 4 22 8 24 12 25L15 25C18 24 22 22 22 16 22 10 18 8 15 8L15 10C18 10 20 12 20 16 20 20 18 22 15 23L12 23C8 22 6 20 6 16 6 12 8 10 11 10M12 4 12 16C12 18 14 18 14 16L14 4C14 2 12 2 12 4"
+                                  fill="<?= $venda['game']=='0' ? 'red' : '#22c55e' ?>"/>
+                        </svg>
+                    </td>
+                    <td class="px-4 py-3 border-t text-center">
+                        <form action="http://localhost:3000/filtrosVendas.php?busca=<?= $busca ?>" method="post">
+                            <input type="hidden" name="id" value="<?= $venda['id'] ?>">
+                            <button type="submit" class="hover:scale-110 transition">
+                                <svg class="w-6 h-6" viewBox="0 0 12 12">
+                                    <path d="M8 5 2 5 2 1 8 1 8 2 3 2 3 4 7 4 7 2 8 2 M5 5 3 7 7 7 5 5" fill="#22c55e"/>
                                 </svg>
-                            </div>
-                        </td>
-                        <?php else:?>
-                        <td class="px-4 py-3 w-[10%] border-t">
-                            <div class="flex items-center justify-center">
-                                <svg class="w-20 h-10" viewBox="0 0 40 40">
-                                    <path d="M11 8C8 8 4 10 4 16 4 22 8 24 12 25L15 25C18 24 22 22 22 16 22 10 18 8 15 8L15 10C18 10 20 12 20 16 20 20 18 22 15 23L12 23C8 22 6 20 6 16 6 12 8 10 11 10M12 4 12 16C12 18 14 18 14 16L14 4C14 2 12 2 12 4" fill="#22c55e"/>
-                                </svg>
-                            </div>
-                        </td>
-                        <?php endif; ?>
-                        <td class="px-4 py-3 w-[10%] border-t text-center">
-                            <form action="http://localhost:3000/filtrosVendas.php?busca=<?=$busca?>" method="post">
-                                <input type="hidden" name="id" value="<?= $venda['id'] ?>">
-                                <button type="submit" class="p-1">
-                                    <svg class="w-10 h-10" viewBox="0 0 12 12">
-                                        <path d="M8 5 2 5 2 1 8 1 8 2 3 2 3 4 7 4 7 2 8 2
-                                                 M5 5 3 7 7 7 5 5"
-                                              fill="#22c55e"/>
-                                    </svg>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
             <?php endforeach; ?>
             </tbody>
         </table>
-        <?php if($mostrarD): ?>
-        <div id="contDis" class="flex fixed top-40 right-10 items-start justify-center h-auto w-[50%]">
-            <table class="w-full text-white">
-                <thead class="bg-[#AFCBEB]">
-                 <tr>
-                     <th class="px-4 py-2 w-60">Dispositivo</th>
-                     <th class="px-4 py-2 w-60">Quantidade</th>
-                 </tr>
-                </thead>
-                <tbody class="bg-[#0F3A6D]">
-                <?php foreach ($exibirDispositivos as $d): ?>
-                <?php if($mostrarD == $d['venda_id']): ?>
+    </div>
+
+    <?php if($mostrarD): ?>
+        <div id="contDis" class="fixed top-20 right-10 bg-white shadow-xl rounded-lg p-6 w-[50%]">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-lg">Detalhes da venda</h2>
+                <button onclick="document.getElementById('contDis').classList.add('hidden')"
+                        class="bg-red-500 text-white px-3 py-1 rounded-md">X</button>
+            </div>
+            <table class="w-full shadow-md mb-4">
+                <thead class="bg-[#d8e3e9]">
                 <tr>
-                    <td class="border-t text-center px-4 py-2"><?=$d['nome']?></td>
-                    <td class="border-t text-center px-4 py-2"><?=$d['quantidade']?></td>
+                    <th class="px-4 py-2">Dispositivo</th>
+                    <th class="px-4 py-2">Quantidade</th>
                 </tr>
-                <?php endif; ?>
+                </thead>
+                <tbody>
+                <?php foreach ($exibirDispositivos as $d): ?>
+                    <?php if($mostrarD == $d['venda_id']): ?>
+                        <tr class="odd:bg-gray-50">
+                            <td class="border-t text-center px-4 py-2"><?= $d['nome'] ?></td>
+                            <td class="border-t text-center px-4 py-2"><?= $d['quantidade'] ?></td>
+                        </tr>
+                    <?php endif; ?>
                 <?php endforeach; ?>
                 </tbody>
             </table>
             <?php foreach ($vendas as $venda): ?>
                 <?php if($venda['id'] == $mostrarD): ?>
-                <div class="bg-[#0F3A6D] w-[50%] text-center text-white">
-                    <p class="p-2 bg-[#AFCBEB] font-bold">Nome</p>
-                    <p class="border-t border-b p-2"><?=$venda['cliente']?></p>
-                </div>
-                <div class="bg-[#0F3A6D] w-[40%] text-center text-white">
-                    <p class="p-2 bg-[#AFCBEB] font-bold">Plano</p>
-                    <p class="border-t border-b p-2"><?=$venda['plano']?></p>
-                </div>
-                <?php endif;?>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-gray-50 p-2 rounded-md shadow">
+                            <p class="font-bold">Nome</p>
+                            <p><?= $venda['cliente'] ?></p>
+                        </div>
+                        <div class="bg-gray-50 p-2 rounded-md shadow">
+                            <p class="font-bold">Plano</p>
+                            <p><?= $venda['plano'] ?></p>
+                        </div>
+                    </div>
+                <?php endif; ?>
             <?php endforeach; ?>
-            <span onclick="document.getElementById('contDis').classList.add('hidden')" class=" cursor-pointer bg-[#AFCBEB] px-4 py-2 border text-white font-bold">X</span>
         </div>
-        <?php endif; ?>
-    </div>
+    <?php endif; ?>
 </main>
-<script>
-</script>
 </body>
 </html>
+
