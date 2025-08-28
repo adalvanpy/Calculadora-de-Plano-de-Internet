@@ -42,12 +42,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 }
 $contrato[] = "Peso total ". $pesototal;
 
-require __DIR__ . '/../vendor/autoload.php';
-
+require __DIR__ . '/vendor/autoload.php';
+use Dotenv\Dotenv;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv = Dotenv::createImmutable(__DIR__ );
 $dotenv->load();
 
 $mail = new PHPMailer(true);

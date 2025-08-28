@@ -72,7 +72,7 @@ $game = $_GET["game"] ?? null;
                 else{ $bg="bg-cyan-200 text-gray-800"; $plano="Plano Diamante"; $vel="800Mb"; $valor="129,99";}
                 ?>
                 <div class="w-full p-4 rounded-lg <?= $bg ?> flex flex-col items-center gap-2">
-                    <input type="text" class="text-center <?= $bg ?> text-2xl font-semibold w-full" value="<?= $plano ?>" readonly>
+                    <input type="text" class="text-center <?= $bg ?> text-2xl font-semibold w-full" name="plano" value="<?= $plano ?>" readonly>
                     <p class="text-4xl font-bold"><?= $vel ?></p>
                     <p class="text-xl"><strong>R$</strong> <?= $valor ?></p>
                     <p class="text-sm">mensal</p>
