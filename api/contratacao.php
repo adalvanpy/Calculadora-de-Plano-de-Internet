@@ -42,9 +42,13 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 }
 $contrato[] = "Peso total ". $pesototal;
 
-require 'vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
+$dotenv->load();
 
 $mail = new PHPMailer(true);
 
@@ -52,13 +56,12 @@ try {
     $mail->isSMTP();
     $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'trabalhodalvananjos@gmail.com';
-    $mail->Password   = 'riil upgi wqur kxqo';
+    $mail->Username   = $_ENV['SMTP_USER'];
+    $mail->Password   = $_ENV['SMTP_PASS'];
     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
-
-    $mail->setFrom('trabalhodalvananjos@gmail.com', 'Desafio miks');
+    $mail->setFrom($_ENV['SMTP_USER'], 'Desafio Miks');
     $mail->addAddress($email, $nome);
     $mail->addAddress('operacoes@micks.com');
 
@@ -66,14 +69,13 @@ try {
     $mail->Subject = 'Plano Internet';
 
     $mail->Body = "Olá $nome, você acaba de contratar o $detalhe!<br>
-                   Detalhes do plano:" .implode(",",$contrato) . "<br>"
-                  ." Agradecemos pela preferência.";
+                   Detalhes do plano: " . implode(",", $contrato) . "<br>
+                   Agradecemos pela preferência.";
+
     $mail->send();
 
     header('location: http://localhost:3001/calculadora_plano.php');
     exit();
-}catch (Exception $e){
+} catch (Exception $e) {
     echo "Falha ao enviar e-mail: {$mail->ErrorInfo}";
 }
-
-?>
